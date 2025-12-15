@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { 
-  LayoutDashboard, ShoppingBag, UtensilsCrossed, Users, Image, Settings, LogOut, Menu, X, MessageCircle 
+  LayoutDashboard, ShoppingBag, UtensilsCrossed, Users, Image, Settings, LogOut, Menu, X, MessageCircle, Handshake 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -14,6 +14,7 @@ const navItems = [
   { href: "/admin/menu", icon: UtensilsCrossed, label: "Cardápio" },
   { href: "/admin/customers", icon: Users, label: "Clientes" },
   { href: "/admin/banners", icon: Image, label: "Banners" },
+  { href: "/admin/partnerships", icon: Handshake, label: "Parcerias" },
   { href: "/admin/whatsapp", icon: MessageCircle, label: "WhatsApp" },
   { href: "/admin/settings", icon: Settings, label: "Configurações" },
 ];
