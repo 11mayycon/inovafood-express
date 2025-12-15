@@ -256,6 +256,50 @@ export type Database = {
           },
         ]
       }
+      partnerships: {
+        Row: {
+          created_at: string
+          external_link: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          published: boolean | null
+          sort_order: number | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          external_link?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          published?: boolean | null
+          sort_order?: number | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          external_link?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          published?: boolean | null
+          sort_order?: number | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partnerships_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           active: boolean | null

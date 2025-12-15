@@ -1,19 +1,18 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
-  UtensilsCrossed, Store, Shield, Smartphone, ChartBar, Clock, 
+  UtensilsCrossed, Store, Shield, Smartphone, ChartBar, 
   MessageCircle, Star, ChevronRight, Instagram, Facebook, Twitter,
-  Menu as MenuIcon, ShoppingBag, Users, Zap
+  Menu as MenuIcon, ShoppingBag, Users, Zap, ChevronLeft
 } from "lucide-react";
-
+import { useState, useEffect, useRef } from "react";
 
 const partners = [
-  { name: "iFood", color: "#EA1D2C", textColor: "#EA1D2C" },
-  { name: "Rappi", color: "#FF441F", textColor: "#FF441F" },
-  { name: "Uber Eats", color: "#06C167", textColor: "#06C167" },
-  { name: "99Food", color: "#FFDD00", textColor: "#FFDD00" },
-  { name: "Aiqfome", color: "#7B2CBF", textColor: "#7B2CBF" },
-  { name: "Delivery Much", color: "#FF6B35", textColor: "#FF6B35" },
+  { name: "iFood", color: "#EA1D2C", bgColor: "rgba(234, 29, 44, 0.15)" },
+  { name: "Rappi", color: "#FF441F", bgColor: "rgba(255, 68, 31, 0.15)" },
+  { name: "Uber Eats", color: "#06C167", bgColor: "rgba(6, 193, 103, 0.15)" },
+  { name: "99Food", color: "#FFB800", bgColor: "rgba(255, 184, 0, 0.15)" },
+  { name: "Aiqfome", color: "#7B2CBF", bgColor: "rgba(123, 44, 191, 0.15)" },
 ];
 
 const features = [
@@ -32,6 +31,19 @@ const testimonials = [
 ];
 
 const Index = () => {
+  const [isPaused, setIsPaused] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const allPartners = [...partners, ...partners, ...partners];
+
+  const scroll = (direction: "left" | "right") => {
+    if (carouselRef.current) {
+      const scrollAmount = 250;
+      carouselRef.current.scrollBy({ 
+        left: direction === "left" ? -scrollAmount : scrollAmount, 
+        behavior: "smooth" 
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen overflow-hidden relative" style={{ background: 'linear-gradient(135deg, hsl(250, 15%, 8%) 0%, hsl(263, 30%, 15%) 100%)' }}>
@@ -99,38 +111,96 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Partners Carousel */}
-        <section className="py-12 border-y border-sidebar-border/30 bg-sidebar/30 backdrop-blur-sm overflow-hidden">
-          <div className="container">
-            <p className="text-center text-sidebar-foreground/50 mb-8 text-sm uppercase tracking-wider">
-              Integrado com as principais plataformas
-            </p>
+        {/* Partners Carousel - Enhanced */}
+        <section className="py-16 relative overflow-hidden border-y border-sidebar-border/20">
+          {/* Gradient overlays for fade effect */}
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[hsl(250,15%,8%)] to-transparent z-20 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[hsl(263,30%,15%)] to-transparent z-20 pointer-events-none" />
+          
+          {/* Shine effect */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute h-full w-40 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shine" />
           </div>
-          <div className="relative">
-            <div className="flex animate-scroll">
-              {[...partners, ...partners, ...partners].map((partner, i) => (
-                <div 
-                  key={`${partner.name}-${i}`}
-                  className="flex-shrink-0 mx-4"
-                >
-                  <div 
-                    className="flex items-center gap-3 px-6 py-3 rounded-full bg-sidebar-accent/80 border border-sidebar-border/50 hover:border-primary/50 hover:scale-105 transition-all duration-300 cursor-pointer group"
+
+          <div className="container mb-10">
+            <h3 className="text-center text-sidebar-foreground/60 text-sm uppercase tracking-[0.25em] font-semibold">
+              Integrado com as principais plataformas
+            </h3>
+          </div>
+
+          {/* Carousel with navigation */}
+          <div 
+            className="relative group"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            {/* Navigation Arrows */}
+            <button
+              onClick={() => scroll("left")}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-sidebar-background/90 backdrop-blur-sm border border-sidebar-border/50 text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:scale-110 shadow-xl flex items-center justify-center"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            
+            <button
+              onClick={() => scroll("right")}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-sidebar-background/90 backdrop-blur-sm border border-sidebar-border/50 text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:scale-110 shadow-xl flex items-center justify-center"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Carousel Track */}
+            <div 
+              ref={carouselRef}
+              className="overflow-x-auto scrollbar-hide px-8"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              <div 
+                className={`flex gap-6 py-4 ${isPaused ? "" : "animate-scroll-partners"}`}
+                style={{ 
+                  animationPlayState: isPaused ? "paused" : "running",
+                  width: "max-content"
+                }}
+              >
+                {allPartners.map((partner, i) => (
+                  <div
+                    key={`${partner.name}-${i}`}
+                    className="flex-shrink-0 group/card"
                   >
                     <div 
-                      className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm"
-                      style={{ backgroundColor: partner.color }}
+                      className="w-44 h-24 md:w-52 md:h-28 rounded-2xl border border-sidebar-border/30 flex items-center justify-center transition-all duration-500 hover:scale-110 cursor-pointer relative overflow-hidden"
+                      style={{ 
+                        backgroundColor: partner.bgColor,
+                        boxShadow: `0 4px 30px ${partner.color}20`
+                      }}
                     >
-                      {partner.name.charAt(0)}
+                      {/* Glow effect on hover */}
+                      <div 
+                        className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"
+                        style={{ 
+                          background: `radial-gradient(circle at center, ${partner.color}40 0%, transparent 70%)`
+                        }}
+                      />
+                      
+                      {/* Logo Text */}
+                      <span 
+                        className="relative z-10 text-2xl md:text-3xl font-bold transition-all duration-300 group-hover/card:scale-110"
+                        style={{ color: partner.color }}
+                      >
+                        {partner.name}
+                      </span>
+                      
+                      {/* Border glow on hover */}
+                      <div 
+                        className="absolute inset-0 rounded-2xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none"
+                        style={{ 
+                          boxShadow: `inset 0 0 30px ${partner.color}50, 0 0 40px ${partner.color}30`
+                        }}
+                      />
                     </div>
-                    <span 
-                      className="font-semibold text-lg group-hover:text-primary transition-colors"
-                      style={{ color: partner.textColor }}
-                    >
-                      {partner.name}
-                    </span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>

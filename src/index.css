@@ -176,4 +176,39 @@
   .animate-scroll {
     animation: scroll 20s linear infinite;
   }
+  
+  @keyframes scroll-partners {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-33.333%);
+    }
+  }
+  
+  .animate-scroll-partners {
+    animation: scroll-partners 25s linear infinite;
+  }
+  
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(400%);
+    }
+  }
+  
+  .animate-shine {
+    animation: shine 3s ease-in-out infinite;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

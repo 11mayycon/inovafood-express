@@ -14,6 +14,7 @@ import AdminMenu from "./pages/admin/Menu";
 import AdminCustomers from "./pages/admin/Customers";
 import AdminBanners from "./pages/admin/Banners";
 import AdminWhatsApp from "./pages/admin/WhatsApp";
+import AdminPartnerships from "./pages/admin/Partnerships";
 import AdminSettings from "./pages/admin/Settings";
 import StoreFront from "./pages/store/StoreFront";
 import StoreProduct from "./pages/store/Product";
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/admin/customers" element={<AdminCustomers />} />
               <Route path="/admin/banners" element={<AdminBanners />} />
               <Route path="/admin/whatsapp" element={<AdminWhatsApp />} />
+              <Route path="/admin/partnerships" element={<AdminPartnerships />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               {/* Store Routes */}
               <Route path="/r/:slug" element={<StoreFront />} />
