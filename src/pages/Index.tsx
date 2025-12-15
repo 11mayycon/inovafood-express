@@ -5,15 +5,15 @@ import {
   MessageCircle, Star, ChevronRight, Instagram, Facebook, Twitter,
   Menu as MenuIcon, ShoppingBag, Users, Zap
 } from "lucide-react";
-import { useEffect, useState } from "react";
+
 
 const partners = [
-  { name: "iFood", logo: "🍔" },
-  { name: "Rappi", logo: "🛵" },
-  { name: "Uber Eats", logo: "🚗" },
-  { name: "99Food", logo: "🏍️" },
-  { name: "Aiqfome", logo: "🍕" },
-  { name: "Delivery Much", logo: "📦" },
+  { name: "iFood", color: "#EA1D2C", textColor: "#EA1D2C" },
+  { name: "Rappi", color: "#FF441F", textColor: "#FF441F" },
+  { name: "Uber Eats", color: "#06C167", textColor: "#06C167" },
+  { name: "99Food", color: "#FFDD00", textColor: "#FFDD00" },
+  { name: "Aiqfome", color: "#7B2CBF", textColor: "#7B2CBF" },
+  { name: "Delivery Much", color: "#FF6B35", textColor: "#FF6B35" },
 ];
 
 const features = [
@@ -32,14 +32,6 @@ const testimonials = [
 ];
 
 const Index = () => {
-  const [currentPartner, setCurrentPartner] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPartner((prev) => (prev + 1) % partners.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="min-h-screen overflow-hidden relative" style={{ background: 'linear-gradient(135deg, hsl(250, 15%, 8%) 0%, hsl(263, 30%, 15%) 100%)' }}>
@@ -108,21 +100,35 @@ const Index = () => {
         </section>
 
         {/* Partners Carousel */}
-        <section className="py-12 border-y border-sidebar-border/30 bg-sidebar/30 backdrop-blur-sm">
+        <section className="py-12 border-y border-sidebar-border/30 bg-sidebar/30 backdrop-blur-sm overflow-hidden">
           <div className="container">
             <p className="text-center text-sidebar-foreground/50 mb-8 text-sm uppercase tracking-wider">
               Integrado com as principais plataformas
             </p>
-            <div className="flex justify-center items-center gap-8 flex-wrap">
-              {partners.map((partner, i) => (
+          </div>
+          <div className="relative">
+            <div className="flex animate-scroll">
+              {[...partners, ...partners, ...partners].map((partner, i) => (
                 <div 
-                  key={partner.name}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-full bg-sidebar-accent/50 border border-sidebar-border/30 transition-all duration-500 ${
-                    i === currentPartner ? "scale-110 border-primary/50 shadow-lg shadow-primary/20" : "opacity-60"
-                  }`}
+                  key={`${partner.name}-${i}`}
+                  className="flex-shrink-0 mx-4"
                 >
-                  <span className="text-2xl">{partner.logo}</span>
-                  <span className="font-medium text-sidebar-foreground">{partner.name}</span>
+                  <div 
+                    className="flex items-center gap-3 px-6 py-3 rounded-full bg-sidebar-accent/80 border border-sidebar-border/50 hover:border-primary/50 hover:scale-105 transition-all duration-300 cursor-pointer group"
+                  >
+                    <div 
+                      className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm"
+                      style={{ backgroundColor: partner.color }}
+                    >
+                      {partner.name.charAt(0)}
+                    </div>
+                    <span 
+                      className="font-semibold text-lg group-hover:text-primary transition-colors"
+                      style={{ color: partner.textColor }}
+                    >
+                      {partner.name}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
