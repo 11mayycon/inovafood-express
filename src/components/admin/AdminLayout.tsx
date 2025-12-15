@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { 
-  LayoutDashboard, ShoppingBag, UtensilsCrossed, Users, Image, Settings, LogOut, Menu, X 
+  LayoutDashboard, ShoppingBag, UtensilsCrossed, Users, Image, Settings, LogOut, Menu, X, MessageCircle 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -14,6 +14,7 @@ const navItems = [
   { href: "/admin/menu", icon: UtensilsCrossed, label: "Cardápio" },
   { href: "/admin/customers", icon: Users, label: "Clientes" },
   { href: "/admin/banners", icon: Image, label: "Banners" },
+  { href: "/admin/whatsapp", icon: MessageCircle, label: "WhatsApp" },
   { href: "/admin/settings", icon: Settings, label: "Configurações" },
 ];
 
@@ -32,7 +33,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen gradient-dark flex items-center justify-center">
-        <div className="animate-pulse text-sidebar-foreground">Carregando...</div>
+        <div className="flex items-center gap-3 text-sidebar-foreground">
+          <div className="w-10 h-10 rounded-xl gradient-primary animate-spin" />
+          <span className="animate-pulse">Carregando...</span>
+        </div>
       </div>
     );
   }
@@ -43,19 +47,19 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex gradient-dark">
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-sidebar border-r border-sidebar-border transform transition-transform lg:translate-x-0",
+        "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-sidebar border-r border-sidebar-border transform transition-transform duration-300 lg:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex flex-col h-full">
           <div className="p-6 flex items-center justify-between">
-            <Link to="/admin" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-                <UtensilsCrossed className="w-5 h-5 text-primary-foreground" />
+            <Link to="/admin" className="flex items-center gap-3 group">
+              <div className="w-11 h-11 rounded-2xl gradient-primary flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform">
+                <UtensilsCrossed className="w-6 h-6 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold text-sidebar-foreground">InovaFood</span>
             </Link>
@@ -73,22 +77,25 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors",
+                    "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300",
                     isActive 
-                      ? "gradient-primary text-primary-foreground" 
-                      : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                      ? "gradient-primary text-primary-foreground shadow-lg shadow-primary/20" 
+                      : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent hover:translate-x-1"
                   )}
                 >
                   <item.icon className="w-5 h-5" />
                   {item.label}
+                  {item.href === "/admin/whatsapp" && (
+                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">Novo</span>
+                  )}
                 </Link>
               );
             })}
           </nav>
 
           <div className="p-4 border-t border-sidebar-border">
-            <div className="flex items-center gap-3 px-4 py-2 mb-2">
-              <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
+            <div className="flex items-center gap-3 px-4 py-3 mb-2 rounded-xl bg-sidebar-accent/50">
+              <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground shadow-lg">
                 {profile?.name?.charAt(0) || "U"}
               </div>
               <div className="flex-1 min-w-0">
@@ -98,7 +105,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </div>
             <Button 
               variant="ghost" 
-              className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              className="w-full justify-start text-sidebar-foreground/70 hover:text-red-400 hover:bg-red-500/10 transition-colors"
               onClick={signOut}
             >
               <LogOut className="w-4 h-4 mr-3" />
@@ -110,7 +117,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 border-b border-sidebar-border bg-sidebar/50 backdrop-blur-xl flex items-center px-4 lg:px-6">
+        <header className="h-16 border-b border-sidebar-border bg-sidebar/50 backdrop-blur-xl flex items-center px-4 lg:px-6 sticky top-0 z-30">
           <Button variant="ghost" size="icon" className="lg:hidden text-sidebar-foreground mr-4" onClick={() => setSidebarOpen(true)}>
             <Menu className="w-5 h-5" />
           </Button>
