@@ -13,6 +13,7 @@ import AdminOrders from "./pages/admin/Orders";
 import AdminMenu from "./pages/admin/Menu";
 import AdminCustomers from "./pages/admin/Customers";
 import AdminBanners from "./pages/admin/Banners";
+import AdminWhatsApp from "./pages/admin/WhatsApp";
 import AdminSettings from "./pages/admin/Settings";
 import StoreFront from "./pages/store/StoreFront";
 import StoreProduct from "./pages/store/Product";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/admin/menu" element={<AdminMenu />} />
               <Route path="/admin/customers" element={<AdminCustomers />} />
               <Route path="/admin/banners" element={<AdminBanners />} />
+              <Route path="/admin/whatsapp" element={<AdminWhatsApp />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               {/* Store Routes */}
               <Route path="/r/:slug" element={<StoreFront />} />

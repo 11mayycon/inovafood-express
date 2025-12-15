@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Star, Eye, EyeOff, Loader2, GripVertical } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Eye, EyeOff, Loader2, GripVertical, Check } from "lucide-react";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 interface Category {
   id: string;
@@ -40,6 +41,7 @@ export default function AdminMenu() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   
   // Category form
   const [catDialogOpen, setCatDialogOpen] = useState(false);
@@ -79,6 +81,7 @@ export default function AdminMenu() {
 
   const saveCat = async () => {
     if (!catName.trim()) return;
+    setSaving(true);
     
     if (editingCat) {
       await supabase.from("categories").update({ name: catName, published: catPublished }).eq("id", editingCat.id);
@@ -93,6 +96,7 @@ export default function AdminMenu() {
     
     toast({ title: editingCat ? "Categoria atualizada!" : "Categoria criada!" });
     setCatDialogOpen(false);
+    setSaving(false);
     fetchData();
   };
 
@@ -122,6 +126,7 @@ export default function AdminMenu() {
 
   const saveProd = async () => {
     if (!prodForm.name.trim() || !prodForm.price) return;
+    setSaving(true);
 
     const data = {
       name: prodForm.name,
@@ -144,6 +149,7 @@ export default function AdminMenu() {
 
     toast({ title: editingProd ? "Produto atualizado!" : "Produto criado!" });
     setProdDialogOpen(false);
+    setSaving(false);
     fetchData();
   };
 
@@ -175,7 +181,7 @@ export default function AdminMenu() {
         <TabsContent value="products" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-semibold text-sidebar-foreground">Produtos</h2>
-            <Button onClick={() => openProdDialog()} className="gradient-primary">
+            <Button onClick={() => openProdDialog()} className="gradient-primary hover:scale-105 transition-transform">
               <Plus className="w-4 h-4 mr-2" />
               Novo Produto
             </Button>
@@ -188,21 +194,28 @@ export default function AdminMenu() {
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.map((prod) => (
-                <Card key={prod.id} className={`bg-sidebar border-sidebar-border overflow-hidden ${!prod.active ? "opacity-60" : ""}`}>
-                  <div className="relative h-40 bg-sidebar-accent">
+                <Card 
+                  key={prod.id} 
+                  className={`bg-sidebar border-sidebar-border overflow-hidden group hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10 ${!prod.active ? "opacity-60" : ""}`}
+                >
+                  <div className="relative h-44 bg-sidebar-accent overflow-hidden">
                     {prod.image_url ? (
-                      <img src={prod.image_url} alt={prod.name} className="w-full h-full object-cover" />
+                      <img 
+                        src={prod.image_url} 
+                        alt={prod.name} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                      />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-sidebar-foreground/30">
-                        Sem imagem
+                      <div className="w-full h-full flex items-center justify-center text-sidebar-foreground/30 text-6xl">
+                        🍽️
                       </div>
                     )}
                     {prod.featured && (
-                      <div className="absolute top-2 left-2 bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-xs flex items-center gap-1">
-                        <Star className="w-3 h-3" /> Destaque
+                      <div className="absolute top-2 left-2 bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-xs flex items-center gap-1 shadow-lg">
+                        <Star className="w-3 h-3 fill-current" /> Destaque
                       </div>
                     )}
-                    <div className="absolute top-2 right-2 flex gap-1">
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => openProdDialog(prod)}>
                         <Pencil className="w-3 h-3" />
                       </Button>
@@ -232,7 +245,7 @@ export default function AdminMenu() {
         <TabsContent value="categories" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-semibold text-sidebar-foreground">Categorias</h2>
-            <Button onClick={() => openCatDialog()} className="gradient-primary">
+            <Button onClick={() => openCatDialog()} className="gradient-primary hover:scale-105 transition-transform">
               <Plus className="w-4 h-4 mr-2" />
               Nova Categoria
             </Button>
@@ -245,7 +258,7 @@ export default function AdminMenu() {
               ) : (
                 <div className="divide-y divide-sidebar-border">
                   {categories.map((cat) => (
-                    <div key={cat.id} className="p-4 flex items-center justify-between hover:bg-sidebar-accent/50">
+                    <div key={cat.id} className="p-4 flex items-center justify-between hover:bg-sidebar-accent/50 transition-colors">
                       <div className="flex items-center gap-3">
                         <GripVertical className="w-5 h-5 text-sidebar-foreground/30 cursor-move" />
                         <span className="font-medium text-sidebar-foreground">{cat.name}</span>
@@ -254,10 +267,10 @@ export default function AdminMenu() {
                         )}
                       </div>
                       <div className="flex gap-2">
-                        <Button size="icon" variant="ghost" onClick={() => openCatDialog(cat)} className="text-sidebar-foreground">
+                        <Button size="icon" variant="ghost" onClick={() => openCatDialog(cat)} className="text-sidebar-foreground hover:text-primary">
                           <Pencil className="w-4 h-4" />
                         </Button>
-                        <Button size="icon" variant="ghost" onClick={() => deleteCat(cat.id)} className="text-red-500 hover:text-red-400">
+                        <Button size="icon" variant="ghost" onClick={() => deleteCat(cat.id)} className="text-red-500 hover:text-red-400 hover:bg-red-500/10">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -285,7 +298,10 @@ export default function AdminMenu() {
               <Label className="text-sidebar-foreground">Publicada</Label>
               <Switch checked={catPublished} onCheckedChange={setCatPublished} />
             </div>
-            <Button onClick={saveCat} className="w-full gradient-primary">Salvar</Button>
+            <Button onClick={saveCat} disabled={saving} className="w-full gradient-primary">
+              {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Check className="w-4 h-4 mr-2" />}
+              Salvar
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -316,9 +332,12 @@ export default function AdminMenu() {
               </div>
             </div>
             <div>
-              <Label className="text-sidebar-foreground">URL da Imagem</Label>
-              <Input value={prodForm.image_url} onChange={(e) => setProdForm({ ...prodForm, image_url: e.target.value })} className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground" placeholder="https://..." />
-              {prodForm.image_url && <img src={prodForm.image_url} alt="Preview" className="mt-2 w-full h-32 object-cover rounded-lg" />}
+              <Label className="text-sidebar-foreground mb-2 block">Imagem do Produto</Label>
+              <ImageUpload 
+                value={prodForm.image_url} 
+                onChange={(url) => setProdForm({ ...prodForm, image_url: url })}
+                folder="products"
+              />
             </div>
             <div>
               <Label className="text-sidebar-foreground">Categoria</Label>
@@ -333,19 +352,24 @@ export default function AdminMenu() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center justify-between">
-              <Label className="text-sidebar-foreground">Ativo</Label>
-              <Switch checked={prodForm.active} onCheckedChange={(v) => setProdForm({ ...prodForm, active: v })} />
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sidebar-foreground">Ativo</Label>
+                <Switch checked={prodForm.active} onCheckedChange={(v) => setProdForm({ ...prodForm, active: v })} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sidebar-foreground">Destaque</Label>
+                <Switch checked={prodForm.featured} onCheckedChange={(v) => setProdForm({ ...prodForm, featured: v })} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="text-sidebar-foreground">Publicar agora</Label>
+                <Switch checked={prodForm.publish_now} onCheckedChange={(v) => setProdForm({ ...prodForm, publish_now: v })} />
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <Label className="text-sidebar-foreground">Destaque</Label>
-              <Switch checked={prodForm.featured} onCheckedChange={(v) => setProdForm({ ...prodForm, featured: v })} />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label className="text-sidebar-foreground">Publicar agora</Label>
-              <Switch checked={prodForm.publish_now} onCheckedChange={(v) => setProdForm({ ...prodForm, publish_now: v })} />
-            </div>
-            <Button onClick={saveProd} className="w-full gradient-primary">Salvar</Button>
+            <Button onClick={saveProd} disabled={saving} className="w-full gradient-primary">
+              {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Check className="w-4 h-4 mr-2" />}
+              Salvar Produto
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
